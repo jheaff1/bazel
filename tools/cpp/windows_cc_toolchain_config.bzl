@@ -516,21 +516,57 @@ def _impl(ctx):
             ],
         )
 
-        static_link_msvcrt_feature = feature(name = "static_link_msvcrt")
-
-        dynamic_link_msvcrt_debug_feature = feature(
-            name = "dynamic_link_msvcrt_debug",
+        static_link_msvcrt_feature = feature(
+            name = "static_link_msvcrt",
             flag_sets = [
                 flag_set(
                     actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
+                    flag_groups = [flag_group(flags = ["/MT"])],
+                    with_features = [with_feature_set(not_features = ["dbg"])],
+                ),
+                flag_set(
+                    actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
+                    flag_groups = [flag_group(flags = ["/MTd"])],
+                    with_features = [with_feature_set(features = ["dbg"])],
+                ),
+                flag_set(
+                    actions = all_link_actions,
+                    flag_groups = [flag_group(flags = ["/DEFAULTLIB:libcmt.lib"])],
+                    with_features = [with_feature_set(not_features = ["dbg"])],
+                ),
+                flag_set(
+                    actions = all_link_actions,
+                    flag_groups = [flag_group(flags = ["/DEFAULTLIB:libcmtd.lib"])],
+                    with_features = [with_feature_set(features = ["dbg"])],
+                ),
+            ]
+        )
+
+        dynamic_link_msvcrt_feature = feature(
+            name = "dynamic_link_msvcrt",
+            enabled = True,
+            flag_sets = [
+                flag_set(
+                    actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
+                    flag_groups = [flag_group(flags = ["/MD"])],
+                    with_features = [with_feature_set(not_features = ["dbg", "static_link_msvcrt"])],
+                ),
+                flag_set(
+                    actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
                     flag_groups = [flag_group(flags = ["/MDd"])],
+                    with_features = [with_feature_set(features = ["dbg"], not_features = ["static_link_msvcrt"])],
+                ),
+                flag_set(
+                    actions = all_link_actions,
+                    flag_groups = [flag_group(flags = ["/DEFAULTLIB:msvcrt.lib"])],
+                    with_features = [with_feature_set(not_features = ["dbg", "static_link_msvcrt"])],
                 ),
                 flag_set(
                     actions = all_link_actions,
                     flag_groups = [flag_group(flags = ["/DEFAULTLIB:msvcrtd.lib"])],
+                    with_features = [with_feature_set(features = ["dbg"], not_features = ["static_link_msvcrt"])],
                 ),
             ],
-            requires = [feature_set(features = ["dbg"])],
         )
 
         dbg_feature = feature(
@@ -683,24 +719,6 @@ def _impl(ctx):
             ],
         )
 
-        dynamic_link_msvcrt_no_debug_feature = feature(
-            name = "dynamic_link_msvcrt_no_debug",
-            flag_sets = [
-                flag_set(
-                    actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
-                    flag_groups = [flag_group(flags = ["/MD"])],
-                ),
-                flag_set(
-                    actions = all_link_actions,
-                    flag_groups = [flag_group(flags = ["/DEFAULTLIB:msvcrt.lib"])],
-                ),
-            ],
-            requires = [
-                feature_set(features = ["fastbuild"]),
-                feature_set(features = ["opt"]),
-            ],
-        )
-
         disable_assertions_feature = feature(
             name = "disable_assertions",
             enabled = True,
@@ -761,24 +779,6 @@ def _impl(ctx):
                     ],
                     flag_groups = [flag_group(flags = ["/showIncludes"])],
                 ),
-            ],
-        )
-
-        static_link_msvcrt_no_debug_feature = feature(
-            name = "static_link_msvcrt_no_debug",
-            flag_sets = [
-                flag_set(
-                    actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
-                    flag_groups = [flag_group(flags = ["/MT"])],
-                ),
-                flag_set(
-                    actions = all_link_actions,
-                    flag_groups = [flag_group(flags = ["/DEFAULTLIB:libcmt.lib"])],
-                ),
-            ],
-            requires = [
-                feature_set(features = ["fastbuild"]),
-                feature_set(features = ["opt"]),
             ],
         )
 
@@ -857,21 +857,6 @@ def _impl(ctx):
                     flag_groups = [flag_group(flags = ["/SUBSYSTEM:CONSOLE"])],
                 ),
             ],
-        )
-
-        static_link_msvcrt_debug_feature = feature(
-            name = "static_link_msvcrt_debug",
-            flag_sets = [
-                flag_set(
-                    actions = [ACTION_NAMES.c_compile, ACTION_NAMES.cpp_compile],
-                    flag_groups = [flag_group(flags = ["/MTd"])],
-                ),
-                flag_set(
-                    actions = all_link_actions,
-                    flag_groups = [flag_group(flags = ["/DEFAULTLIB:libcmtd.lib"])],
-                ),
-            ],
-            requires = [feature_set(features = ["dbg"])],
         )
 
         frame_pointer_feature = feature(
@@ -1073,10 +1058,7 @@ def _impl(ctx):
             default_link_flags_feature,
             linker_param_file_feature,
             static_link_msvcrt_feature,
-            static_link_msvcrt_no_debug_feature,
-            dynamic_link_msvcrt_no_debug_feature,
-            static_link_msvcrt_debug_feature,
-            dynamic_link_msvcrt_debug_feature,
+            dynamic_link_msvcrt_feature,
             dbg_feature,
             fastbuild_feature,
             opt_feature,
