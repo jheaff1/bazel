@@ -258,10 +258,8 @@ def _impl(ctx):
         implies = [
             "compiler_input_flags",
             "compiler_output_flags",
-            "default_compile_flags",
             "user_compile_flags",
             "sysroot",
-            "unfiltered_compile_flags",
         ],
         tools = [tool(path = "wrapper/bin/msvc_cl.bat")],
     )
@@ -271,10 +269,8 @@ def _impl(ctx):
         implies = [
             "compiler_input_flags",
             "compiler_output_flags",
-            "default_compile_flags",
             "user_compile_flags",
             "sysroot",
-            "unfiltered_compile_flags",
         ],
         tools = [tool(path = "wrapper/bin/msvc_cl.bat")],
     )
@@ -499,6 +495,7 @@ def _impl(ctx):
     elif (ctx.attr.cpu == "x64_windows_msvc"):
         unfiltered_compile_flags_feature = feature(
             name = "unfiltered_compile_flags",
+            enabled = True,
             flag_sets = [
                 flag_set(
                     actions = [

@@ -135,7 +135,6 @@ def _impl(ctx):
                 "output_execpath_flags",
                 "input_param_flags",
                 "user_link_flags",
-                "default_link_flags",
                 "linker_subsystem_flag",
                 "linker_param_file",
                 "msvc_env",
@@ -187,13 +186,11 @@ def _impl(ctx):
             implies = [
                 "compiler_input_flags",
                 "compiler_output_flags",
-                "default_compile_flags",
                 "nologo",
                 "msvc_env",
                 "parse_showincludes",
                 "user_compile_flags",
                 "sysroot",
-                "unfiltered_compile_flags",
             ],
             tools = [tool(path = ctx.attr.msvc_cl_path)],
         )
@@ -203,13 +200,11 @@ def _impl(ctx):
             implies = [
                 "compiler_input_flags",
                 "compiler_output_flags",
-                "default_compile_flags",
                 "nologo",
                 "msvc_env",
                 "parse_showincludes",
                 "user_compile_flags",
                 "sysroot",
-                "unfiltered_compile_flags",
             ],
             tools = [tool(path = ctx.attr.msvc_cl_path)],
         )
@@ -222,7 +217,6 @@ def _impl(ctx):
                 "output_execpath_flags",
                 "input_param_flags",
                 "user_link_flags",
-                "default_link_flags",
                 "linker_subsystem_flag",
                 "linker_param_file",
                 "msvc_env",
@@ -240,7 +234,6 @@ def _impl(ctx):
                 "output_execpath_flags",
                 "input_param_flags",
                 "user_link_flags",
-                "default_link_flags",
                 "linker_subsystem_flag",
                 "linker_param_file",
                 "msvc_env",
@@ -338,6 +331,7 @@ def _impl(ctx):
 
         unfiltered_compile_flags_feature = feature(
             name = "unfiltered_compile_flags",
+            enabled = True,
             flag_sets = [
                 flag_set(
                     actions = [
